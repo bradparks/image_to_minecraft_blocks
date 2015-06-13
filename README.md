@@ -15,4 +15,7 @@ I then use this with the simple scriptcraft module :
 
 `scriptcraft/image_to_wall.js`
 
-To use this, you need to [install node](https://nodejs.org/download/)
+To use this, you need to:
+- [install node](https://nodejs.org/download/)
+- run `npm install`
+- try to run an example, e.g. `node app.js images/test.png -s 30`
