@@ -1,0 +1,24 @@
+{
+  "name": "image_to_minecraft_blocks",
+  "version": "0.0.1",
+  "description": "Take an image, and convert it to a javascript array of Minecraft Block Ids",
+  "main": "app.js",
+  "dependencies": {
+    "get-pixels": "^3.2.2",
+    "stdio": "^0.2.7",
+    "png": "^3.0.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "minecraft",
+    "image",
+    "picture",
+    "block",
+    "blocks"
+  ],
+  "author": "Brad Parks",
+  "license": "MIT"
+}
