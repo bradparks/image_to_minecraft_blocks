@@ -1,6 +1,8 @@
-This app converts an image into a series of Minecraft Block Ids
+This app and an associated script allow you to import any image Minecraft using LearnToMod.com, as a huge wall of blocks, one block per dithered pixel.
 
-It also generates a Minecraft palette optimzed image, mapping RGB colors to Minecraft Block Ids that are closest in color.
+It will also work with Scriptcraft as well.
+
+How does it work? It converts an image into a series of Minecraft Block Ids. It also generates a Minecraft palette optimzed image, mapping RGB colors to Minecraft Block Ids that are closest in color.
 
 An example of running the app is:
 
