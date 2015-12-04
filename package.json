@@ -5,8 +5,9 @@
   "main": "app.js",
   "dependencies": {
     "get-pixels": "^3.2.2",
-    "stdio": "^0.2.7",
-    "png": "^3.0.3"
+    "pngjs-image": "^0.11.6",
+    "pngjs2": "^2.0.0",
+    "stdio": "^0.2.7"
   },
   "devDependencies": {},
   "scripts": {

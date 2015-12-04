@@ -1,15 +1,29 @@
 var fs = require("fs");
 var Buffer = require("buffer").Buffer;
-var Png = require("png").Png;
+var PNG = require("pngjs2").PNG;
+var exec = require('child_process').exec;
 
 var arrayToPng = function() {
 };
+
+arrayToPng.prototype.flipOutput = function(callback)
+{
+  var params = "output.png -transpose output_new.png";
+  var cmd = 'convert ' + params;
+  exec(cmd, function(err, stdout, stderr) {
+    if (err) {
+      this._error('Couldnt flip image', err);
+    } else {
+      callback();
+    }
+  }.bind(this));
+}
 
 arrayToPng.prototype.generate = function(pixels, rgbToBlock)
 {
   var IMAGE_WIDTH = pixels.shape[0];
   var IMAGE_HEIGHT = pixels.shape[1];
-  var rgb_data = new Buffer(IMAGE_WIDTH * IMAGE_HEIGHT * 3);
+  var rgb_data = new PNG({width:IMAGE_WIDTH,height:IMAGE_HEIGHT});
   var out = "var data = [";
 
   var data = [];
@@ -25,16 +39,15 @@ arrayToPng.prototype.generate = function(pixels, rgbToBlock)
       var b = pixels.get(x,y,2);
       var a = pixels.get(x,y,3);
 
-      var p = x * IMAGE_WIDTH * 3 + y * 3;
-      rgb_data[p + 0] = r; // r (0-255)
-      rgb_data[p + 1] = g; // g (0-255)
-      rgb_data[p + 2] = b; // b (0-255)
+      var p = (rgb_data.width * x + y) << 2;
+      rgb_data.data[p + 0] = r; // r (0-255)
+      rgb_data.data[p + 1] = g; // g (0-255)
+      rgb_data.data[p + 2] = b; // b (0-255)
+      rgb_data.data[p + 3] = a; // b (0-255)
 
       var c = {r:r, g:g, b:b};
       var closest = rgbToBlock.findClosestColor(c);
 
-      //console.log([closest.color.b, closest.color.b.name]);
-      //console.log(closest.color.id, closest.color.name);
       var blockId = closest.color.id;
       out += "[" + blockId.join(",") + "]";
       if (y != IMAGE_HEIGHT - 1)
@@ -56,8 +69,6 @@ arrayToPng.prototype.generate = function(pixels, rgbToBlock)
   }
   out += "];";
 
-  var png = new Png(rgb_data, IMAGE_WIDTH, IMAGE_HEIGHT, "rgb");
-
   var outputFilename = 'output_2d_array.js';
   fs.writeFile(outputFilename, out, function(err) {
     if(err) { throw err; }
@@ -73,35 +84,14 @@ arrayToPng.prototype.generate = function(pixels, rgbToBlock)
       }
   }); 
 
-  fs.writeFile("output1.png", png.encodeSync().toString("binary"), "binary", function(err) {
-    if(err) { throw err; }
-  });
-};
-
-arrayToPng.prototype.generate1 = function() 
-{
-  var IMAGE_WIDTH = 255;
-  var IMAGE_HEIGHT = 255;
-
-  var rgb_data = new Buffer(IMAGE_WIDTH * IMAGE_HEIGHT * 3);
-
-  for(var h = 0; h < IMAGE_HEIGHT; h++)
-  {
-    for(var w = 0; w < IMAGE_WIDTH; w++)
-    {
-      var p = h * IMAGE_WIDTH * 3 + w * 3;
-      rgb_data[p + 0] = h; // r (0-255)
-      rgb_data[p + 1] = 0; // g (0-255)
-      rgb_data[p + 2] = w; // b (0-255)
-    }
-  }
-
-  var png = new Png(rgb_data, IMAGE_WIDTH, IMAGE_HEIGHT, "rgb");
-
-  fs.writeFile("output1.png", png.encodeSync().toString("binary"),
-               "binary", function(err) {
-    if(err) { throw err; }
-  });
+  outputFilename = __dirname + '/output.png';
+  rgb_data.pack()
+    .pipe(fs.createWriteStream(outputFilename))
+    .on('finish', function() {
+      this.flipOutput(function() {
+        console.log('Sample image saved to ' + outputFilename);
+      });
+    }.bind(this));
 };
 
 exports.arrayToPng = arrayToPng;
