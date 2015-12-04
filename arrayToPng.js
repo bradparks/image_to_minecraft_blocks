@@ -8,7 +8,7 @@ var arrayToPng = function() {
 
 arrayToPng.prototype.flipOutput = function(callback)
 {
-  var params = "output.png -transpose output_new.png";
+  var params = "output_tmp.png -transpose output.png";
   var cmd = 'convert ' + params;
   exec(cmd, function(err, stdout, stderr) {
     if (err) {
@@ -84,12 +84,13 @@ arrayToPng.prototype.generate = function(pixels, rgbToBlock)
       }
   }); 
 
-  outputFilename = __dirname + '/output.png';
+  outputFilename = __dirname + '/output_tmp.png';
+  outputNewFilename = __dirname + '/output.png';
   rgb_data.pack()
     .pipe(fs.createWriteStream(outputFilename))
     .on('finish', function() {
       this.flipOutput(function() {
-        console.log('Sample image saved to ' + outputFilename);
+        console.log('Sample image saved to ' + outputNewFilename);
       });
     }.bind(this));
 };
